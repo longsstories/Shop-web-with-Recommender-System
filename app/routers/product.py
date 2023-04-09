@@ -33,3 +33,5 @@ async def read_item(item_id: int):
     return product.recommender(item_id)
 
 add_pagination(router)
+
+print("alo")
