@@ -1,4 +1,4 @@
-from fastapi import APIRouter,Depends,status
+from fastapi import APIRouter,Depends,status,Query
 from typing import List
 from .. import schemas,database
 from sqlalchemy.orm import Session
@@ -25,6 +25,11 @@ def danhmuc(dm,db: Session =Depends(get_db)):
 def show(id_prd,db: Session =Depends(get_db)):
     prd=product.get_product(id_prd,db)
     return prd
+
+#tim san pham theo ten
+@router.get("/search/",response_model=Page[schemas.ShowProduct],status_code=status.HTTP_200_OK)
+def search(name:str=Query(min_length=2,max_length=20),db: Session =Depends(get_db)):
+    return paginate(product.get_search(name,db))
     
 
 #chua xong

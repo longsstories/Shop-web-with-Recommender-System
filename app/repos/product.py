@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from .. import tables
-from fastapi import HTTPException,status
+from fastapi import HTTPException,status,Query
 import tensorflow as tf
 
 def get_all(db:Session):
@@ -19,6 +19,11 @@ def get_product(id_prd,db:Session):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Product with the id {id_prd} is not available')
     return product
+
+def get_search(name,db:Session):
+    search = "%{}%".format(name)
+    nameinDB=db.query(tables.product).filter(tables.product.name.like(search)).all()
+    return nameinDB
 
 def recommender(productId):
     imported_model = tf.saved_model.load('path to model')
