@@ -32,9 +32,9 @@ def categories():
             ]}
 
 #thong tin san pham theo danh muc
-@router.get("/{dm}",status_code=status.HTTP_200_OK,response_model=Page[schemas.ShowProduct])
-def danhmuc(dm,db: Session =Depends(get_db)):
-    return paginate(product.get_danhmuc(dm,db))
+@router.get("/categories/{dm}",status_code=status.HTTP_200_OK,response_model=Page[schemas.ShowProduct])
+def cat(dm,db: Session =Depends(get_db)):
+    return paginate(product.get_cat(dm,db))
 
 #thong tin san pham theo id
 @router.get("/product/{id_prd}",status_code=status.HTTP_200_OK,response_model=schemas.ShowProduct)
