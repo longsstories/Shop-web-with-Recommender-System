@@ -4,16 +4,32 @@ from .. import schemas,database
 from sqlalchemy.orm import Session
 from ..repos import product
 from fastapi_pagination import Page,add_pagination,paginate
-
+from pydantic import Field
 router=APIRouter(
     tags=["product"]
 )
 
 get_db=database.get_db
 
+Page = Page.with_custom_options(
+    size=Field(32, ge=1, le=500),
+)
+
 @router.get("/trangchu",response_model=Page[schemas.ShowProduct],status_code=status.HTTP_200_OK)
 def trangchu(db: Session =Depends(get_db)):
     return paginate(product.get_all(db))
+#lay danh muc
+@router.get("/categories",status_code=status.HTTP_200_OK)
+def categories():
+    return {"message":"get categories successfully",
+            "categories":[
+                {"id":1,
+                "name":"Đồ điện tử"},
+                {"id":2,
+                 "name":"Đồ gia dụng"},
+                {"id":3,
+                 "name":"Áo quần"}
+            ]}
 
 #thong tin san pham theo danh muc
 @router.get("/{dm}",status_code=status.HTTP_200_OK,response_model=Page[schemas.ShowProduct])
@@ -33,10 +49,8 @@ def search(name:str=Query(min_length=2,max_length=20),db: Session =Depends(get_d
     
 
 #chua xong
-@router.get("/product/{item_id}",status_code=status.HTTP_200_OK)
-async def read_item(item_id: int):
-    return product.recommender(item_id)
+# @router.get("/product/{item_id}",status_code=status.HTTP_200_OK)
+# async def read_item(item_id: int):
+#     return product.recommender(item_id)
 
 add_pagination(router)
-
-print("alo")

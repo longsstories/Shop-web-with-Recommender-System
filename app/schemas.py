@@ -5,16 +5,18 @@ class ShowProduct(BaseModel):
     name:str
     price:str
     imgurl:str
+    id:int
     class Config():
         orm_mode=True
 
 class User(BaseModel):
-    name:str
     email:str
     password:str
+    class Config():
+        orm_mode=True
 
 class ShowUser(BaseModel):
-    name:str
+    name:str|None
     email:str
     class Config():
         orm_mode=True
