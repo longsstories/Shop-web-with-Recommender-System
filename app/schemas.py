@@ -17,6 +17,9 @@ class User(BaseModel):
 
 class ShowUser(BaseModel):
     name:str|None
+    phone:str|None
+    address:str|None
+    gender:str|None
     email:str
     class Config():
         orm_mode=True
@@ -24,3 +27,5 @@ class ShowUser(BaseModel):
 class Login(BaseModel):
     username:str
     password:str
+    class Config():
+        orm_mode=True

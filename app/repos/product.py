@@ -7,8 +7,8 @@ def get_all(db:Session):
     products=db.query(tables.product).all()
     return products
 
-def get_danhmuc(dm,db:Session):
-    products=db.query(tables.product).filter(tables.product.danhmuc==dm).all()
+def get_cat(dm,db:Session):
+    products=db.query(tables.product).filter(tables.product.cat==dm).all()
     if not products:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return products
