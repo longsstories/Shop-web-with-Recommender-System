@@ -8,7 +8,7 @@ def create_user(request:schemas.User,db:Session):
     new_email=request.email
     checkEmail=db.query(tables.User).filter(tables.User.email==new_email).first()
     if not checkEmail:
-        new_user=tables.User(name=request.name,email=request.email,password=Hash.bcrypt(request.password))
+        new_user=tables.User(email=request.email,password=Hash.bcrypt(request.password))
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
