@@ -6,3 +6,4 @@ bcrypt
 python-jose
 tensorflow
 fastapi-pagination[all]
+python-multipart

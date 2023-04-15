@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
-from .. import tables,schemas
+from .. import tables
 from fastapi import HTTPException,status
-from ..hashing import Hash
 
 
 #tao thong tin khach hang
