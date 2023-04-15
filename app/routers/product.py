@@ -1,6 +1,6 @@
 from fastapi import APIRouter,Depends,status,Query
 from typing import List
-from .. import schemas,database
+from .. import schemas,database,oauth2
 from sqlalchemy.orm import Session
 from ..repos import product
 from fastapi_pagination import Page,add_pagination,paginate
@@ -37,16 +37,18 @@ def cat(dm,db: Session =Depends(get_db)):
     return paginate(product.get_cat(dm,db))
 
 #thong tin san pham theo id
-@router.get("/product/{id_prd}",status_code=status.HTTP_200_OK,response_model=schemas.ShowProduct)
-def show(id_prd,db: Session =Depends(get_db)):
-    prd=product.get_product(id_prd,db)
+@router.get("/product",status_code=status.HTTP_200_OK,response_model=schemas.ShowProduct)
+def show(id:int,db: Session =Depends(get_db)):
+    prd=product.get_product(id,db)
+    name=prd.name
     return prd
 
 #tim san pham theo ten
-@router.get("/search/",response_model=Page[schemas.ShowProduct],status_code=status.HTTP_200_OK)
-def search(name:str=Query(min_length=2,max_length=20),db: Session =Depends(get_db)):
-    return paginate(product.get_search(name,db))
-    
+@router.get("/search",response_model=Page[schemas.ShowProduct],status_code=status.HTTP_200_OK)
+def search(keyword:str,db: Session =Depends(get_db)):
+    keyword=Query(min_length=2,max_length=20)
+    return paginate(product.get_search(keyword,db))
+   
 
 #chua xong
 # @router.get("/product/{item_id}",status_code=status.HTTP_200_OK)
