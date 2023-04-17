@@ -45,9 +45,13 @@ def show(id:int,db: Session =Depends(get_db)):
 
 #tim san pham theo ten
 @router.get("/search",response_model=Page[schemas.ShowProduct],status_code=status.HTTP_200_OK)
-def search(keyword:str,db: Session =Depends(get_db)):
-    keyword=Query(min_length=2,max_length=20)
-    return paginate(product.get_search(keyword,db))
+def search(keyword:str=Query(min_length=2,max_length=20),
+           minprice:int|None =Query(None,gt=0),
+           maxprice:int|None =Query(None,gt=0),
+           sortby:str|None =Query(None,enum=["price","sales"]),
+           order:str|None =Query("acs",enum=["acs","decs"]),
+           db: Session =Depends(get_db)):
+    return paginate(product.get_search(keyword,minprice,maxprice,sortby,order,db))
    
 
 #chua xong

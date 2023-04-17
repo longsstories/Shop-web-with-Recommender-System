@@ -5,6 +5,8 @@ class ShowProduct(BaseModel):
     name:str
     price:str
     imgurl:str
+    quantity:str
+    sold:str
     id:int
     class Config():
         orm_mode=True
