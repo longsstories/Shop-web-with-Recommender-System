@@ -7,9 +7,12 @@ class product(Base):
     id = Column(Integer,primary_key=True,index=True)
     cat=Column(String) #category
     name=Column(String)
-    price=Column(String)
+    price=Column(Integer)
     imgurl=Column(String)
     danhmuc=Column(String)
+    name_unaccented=Column(String)
+    sold=Column(Integer)
+    quantity=Column(Integer)
 
 class User(Base):
     __tablename__='users'
