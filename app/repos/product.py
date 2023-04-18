@@ -30,18 +30,15 @@ def normalize(keyword):
         keyword=keyword.replace(accented_words[letter],unaccented_words[letter])
     return keyword
 
-def get_search(keyword,minprice,maxprice,sortby,order,db:Session):
-    keyword=normalize(keyword)
-    search = "%{}%".format(keyword)
-    data_searched=db.query(tables.product).filter(tables.product.name_unaccented.like(search))
-    if sortby:
-        if sortby=="price":
-            if order=="acs":
-                data_searched=data_searched.order_by(tables.product.price.asc())
-            else:
-                data_searched=data_searched.order_by(tables.product.price.desc())
-        else:
-            data_searched=data_searched.order_by(tables.product.sold.desc())
+def get_search(keyword,minprice,maxprice,sortby,order,cat,db:Session):
+    if cat:
+        data_searched=db.query(tables.product).filter(tables.product.danhmuc==cat)
+    else:
+        data_searched=db.query(tables.product)
+    if keyword:
+        keyword=normalize(keyword)
+        search = "%{}%".format(keyword)
+        data_searched=data_searched.filter(tables.product.name_unaccented.like(search))
     if minprice:
         if maxprice:
             if minprice>maxprice:
@@ -54,6 +51,16 @@ def get_search(keyword,minprice,maxprice,sortby,order,db:Session):
     else:
         if maxprice:
             data_searched=data_searched.filter(tables.product.price<=maxprice)
+    if sortby:
+        if sortby=="price":
+            if order=="acs":
+                data_searched=data_searched.order_by(tables.product.price.asc())
+            else:
+                data_searched=data_searched.order_by(tables.product.price.desc())
+        else:
+            data_searched=data_searched.order_by(tables.product.sold.desc())
+    else:
+        data_searched=data_searched.order_by(func.random())
     return data_searched.all()
 
 # def recommender(productId):

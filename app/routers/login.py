@@ -46,3 +46,7 @@ def login(request:schemas.Login,db:Session=Depends(database.get_db)):
                 "user":user
             }
             }
+
+@router.post('/logout')
+def logout():
+    return
