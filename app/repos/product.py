@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from .. import tables
-from fastapi import HTTPException,status,Query
+from fastapi import HTTPException,status
 import tensorflow as tf
 from sqlalchemy.sql.expression import func
 

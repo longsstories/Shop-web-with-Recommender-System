@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional,List
+from datetime import datetime
 
 class ShowProduct(BaseModel):
     name:str
@@ -7,9 +8,11 @@ class ShowProduct(BaseModel):
     imgurl:str
     quantity:str
     sold:str
+    old_price:str
     id:int
     class Config():
         orm_mode=True
+
 
 class User(BaseModel):
     email:str
@@ -35,3 +38,22 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email:Optional[str]=None
+
+class AddToCart(BaseModel):
+    product_id: int
+    buy_count: int
+
+
+class CartItems(BaseModel):
+    product_name: str
+    product_image: str
+    product_price: float
+    product_quantity: int
+    price: int
+
+class Carts(BaseModel):
+    total: float
+    items: List[CartItems] = []
+
+    class Config:
+        orm_mode = True
