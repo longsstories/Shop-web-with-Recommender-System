@@ -23,7 +23,17 @@ Page = Page.with_custom_options(
 # @router.get("/categories/{dm}",status_code=status.HTTP_200_OK,response_model=Page[schemas.ShowProduct])
 # def cat(dm,db: Session =Depends(get_db)):
 #     return paginate(product.get_cat(dm,db))
-
+@router.get("/categories",status_code=status.HTTP_200_OK)
+def categories():
+    return {"message":"get categories successfully",
+            "categories":[
+                {"id":1,
+                "name":"Đồ điện tử"},
+                {"id":2,
+                 "name":"Đồ gia dụng"},
+                {"id":3,
+                 "name":"Áo quần"}
+            ]}
 #thong tin san pham theo id
 @router.get("/product",status_code=status.HTTP_200_OK,response_model=schemas.ShowProduct)
 def show(id:int,db: Session =Depends(get_db)):
@@ -41,10 +51,8 @@ def search(keyword:str=Query(None,min_length=2,max_length=20),
            db: Session =Depends(get_db)):
     return paginate(product.get_search(keyword,minprice,maxprice,sortby,order,cat,db))
    
-
-#chua xong
-# @router.get("/product/{item_id}",status_code=status.HTTP_200_OK)
-# async def read_item(item_id: int):
-#     return product.recommender(item_id)
+@router.get("/recommender",status_code=status.HTTP_200_OK)
+def recommend_items(item_id: int,db: Session =Depends(get_db)):
+    return product.recommender(item_id,db)
 
 add_pagination(router)
