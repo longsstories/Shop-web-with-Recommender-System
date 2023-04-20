@@ -56,10 +56,5 @@ class CartItems(BaseModel):
 class Carts(BaseModel):
     total: float
     items: List[CartItems] = []
-
     class Config:
         orm_mode = True
-
-class Order(BaseModel):
-    order_id : int
-    items: Carts

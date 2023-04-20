@@ -26,6 +26,6 @@ def delete_item(item_id,db: Session =Depends(get_db),user: schemas.User = Depend
 def update_quantity(request:schemas.AddToCart,db: Session =Depends(get_db),user: schemas.User = Depends(oauth2.get_current_user)):
     return cart.update_quantity(request,db,user)
 
-@router.patch("/cart/buy",response_model=schemas.Order, status_code=status.HTTP_200_OK)
+@router.patch("/cart/buy", status_code=status.HTTP_200_OK)
 def buy_item(db: Session =Depends(get_db),user: schemas.User = Depends(oauth2.get_current_user)):
     return cart.buy_item(db,user)

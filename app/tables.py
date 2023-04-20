@@ -27,7 +27,7 @@ class User(Base):
     email=Column(String)
     password=Column(String)
     cart = relationship("CartItems", back_populates="user_inf")
-    #oder = relationship("items_inf", back_populates="oder")
+    order = relationship("Order", back_populates="user")
 
 class CartItems(Base):
     __tablename__ = 'cart_items'
@@ -39,19 +39,19 @@ class CartItems(Base):
     user_inf = relationship("User", back_populates="cart")
     prd_inf = relationship("product", back_populates="cart")
 
-# class Order(Base):
-#     __tablename__ = 'oders'
-#     id = Column(Integer, nullable=False, primary_key=True, index=True)
-#     created_at = Column(TIMESTAMP(timezone=True),nullable=False, server_default=func.now())
-#     user_id = Column(Integer,ForeignKey("users.id"))
-#     user_inf = relationship("User",back_populates="oder")
-#     order_detail= relationship("OrderDetail",back_populates="order")
-
-# class OrderDetail(Base):
-#     __tablename__ = 'oders_detail'
-#     id = Column(Integer, nullable=False, primary_key=True, index=True)
-#     odder_id= Column(Integer,ForeignKey("orders.id"))
-#     product_id=Column(Integer)
-#     quantity=Column(Integer)
-#     price=Column(Integer)
-#     order= relationship("Order",back_populates="order_detail")
+class Order(Base):
+    __tablename__ = 'orders'
+    id = Column(Integer, nullable=False, primary_key=True, index=True)
+    user_id=Column(Integer,ForeignKey("users.id"))
+    created_at = Column(TIMESTAMP(timezone=True),nullable=False, server_default=func.now())
+    user = relationship("User",back_populates="order")
+    order_detail = relationship("OrderDetail",back_populates="order")
+    
+class OrderDetail(Base):
+    __tablename__ = 'oder_detail'
+    id = Column(Integer, nullable=False, primary_key=True, index=True)
+    order_id= Column(Integer,ForeignKey("orders.id"))
+    product_id=Column(Integer)
+    quantity=Column(Integer)
+    price=Column(Integer)
+    order= relationship("Order", back_populates="order_detail")
