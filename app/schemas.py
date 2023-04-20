@@ -45,6 +45,7 @@ class AddToCart(BaseModel):
 
 
 class CartItems(BaseModel):
+    produc_id:int
     product_name: str
     product_image: str
     product_price: float
