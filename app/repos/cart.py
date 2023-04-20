@@ -37,6 +37,29 @@ def show_item(user):
     return {'total': total, 'items': items_list}
   
 def clear_item(item_id,db: Session,user):
-    item=db.query(tables.CartItems).filter(tables.CartItems.product_id==item_id).first()
-    db.query(tables.CartItems).delete(item)
+    cart_items=db.query(tables.CartItems).filter(tables.CartItems.user_id==user.id)
+    del_item=cart_items.filter(tables.CartItems.product_id==item_id).first()
+    if del_item:
+        db.delete(del_item)
+        db.commit()
+    else:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                        detail=f"Item doesn't exist")
+    return user.cart
+
+def update_quantity(request, db: Session,user):
+    db.query(tables.CartItems).filter(tables.CartItems.user_id==user.id).filter(tables.CartItems.product_id==request.product_id).update({tables.CartItems.product_quantity:request.buy_count})
+    db.commit()
+    return user.cart
+
+def buy_item(db: Session,user):
+    items=db.query(tables.CartItems).filter(tables.CartItems.user_id==user.id).all()
+    for item in items:
+        prd_id=item.product_id
+        #update quantity,sold
+        db.query(tables.product).filter(tables.product.id==prd_id).update({tables.product.quantity:tables.product.quantity-item.product_quantity})
+        db.query(tables.product).filter(tables.product.id==prd_id).update({tables.product.sold:tables.product.sold+item.product_quantity})
+        # delele from cart
+        db.delete(item)
+        db.commit()
     return user.cart

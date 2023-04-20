@@ -20,5 +20,13 @@ def carts(user: schemas.User = Depends(oauth2.get_current_user)):
     return cart.show_item(user)
 
 @router.delete("/clear")
-def clear_item(item_id,db: Session =Depends(get_db),user: schemas.User = Depends(oauth2.get_current_user)):
+def delete_item(item_id,db: Session =Depends(get_db),user: schemas.User = Depends(oauth2.get_current_user)):
     return cart.clear_item(item_id,db,user)
+
+@router.patch("/cart/update")
+def update_quantity(request:schemas.AddToCart,db: Session =Depends(get_db),user: schemas.User = Depends(oauth2.get_current_user)):
+    return cart.update_quantity(request,db,user)
+
+@router.patch("/cart/buy")
+def buy_item(db: Session =Depends(get_db),user: schemas.User = Depends(oauth2.get_current_user)):
+    return cart.buy_item(db,user)
