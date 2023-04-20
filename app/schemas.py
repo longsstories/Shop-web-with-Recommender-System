@@ -45,12 +45,13 @@ class AddToCart(BaseModel):
 
 
 class CartItems(BaseModel):
-    produc_id:int
+    product_id:int
     product_name: str
     product_image: str
     product_price: float
     product_quantity: int
     price: int
+    old_price: int
 
 class Carts(BaseModel):
     total: float
@@ -58,3 +59,7 @@ class Carts(BaseModel):
 
     class Config:
         orm_mode = True
+
+class Order(BaseModel):
+    order_id : int
+    items: Carts

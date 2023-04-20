@@ -28,6 +28,7 @@ def show_item(user):
         product_image=item.prd_inf.imgurl   
         product_quantity=item.product_quantity
         product_price=price*product_quantity
+        old_price=item.prd_inf.old_price
         total += product_price
         item_dict={
             "product_id":prd_id,
@@ -35,6 +36,7 @@ def show_item(user):
             "product_image" : product_image,
             "product_quantity" : product_quantity,
             "product_price" : product_price,
+            "old_price":old_price,
             "price": price
         }
         items_list.append(item_dict)
@@ -57,6 +59,10 @@ def update_quantity(request, db: Session,user):
     return user.cart
 
 def buy_item(db: Session,user):
+    #new_order=tables.Order(user.id)
+    # db.add(new_order)
+    # db.commit()
+    # db.refresh(new_order)
     items=db.query(tables.CartItems).filter(tables.CartItems.user_id==user.id).all()
     for item in items:
         prd_id=item.product_id
