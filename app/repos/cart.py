@@ -1,8 +1,6 @@
 from sqlalchemy.orm import Session
 from .. import tables
 from fastapi import HTTPException,status
-from . import product
-
 
 def add_to_cart(request, db: Session,user):
     cart_items=db.query(tables.CartItems).filter(tables.CartItems.user_id==user.id)
@@ -29,6 +27,7 @@ def show_item(user):
         product_quantity=item.product_quantity
         product_price=price*product_quantity
         old_price=item.prd_inf.old_price
+        quantity=item.prd_inf.quantity
         total += product_price
         item_dict={
             "product_id":prd_id,
@@ -37,6 +36,7 @@ def show_item(user):
             "product_quantity" : product_quantity,
             "product_price" : product_price,
             "old_price":old_price,
+            "quantity":quantity,
             "price": price
         }
         items_list.append(item_dict)
@@ -49,7 +49,7 @@ def clear_item(item_id,db: Session,user):
         db.delete(del_item)
         db.commit()
     else:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                         detail=f"Item doesn't exist")
     return user.cart
 
@@ -59,17 +59,26 @@ def update_quantity(request, db: Session,user):
     return user.cart
 
 def buy_item(db: Session,user):
-    #new_order=tables.Order(user.id)
-    # db.add(new_order)
-    # db.commit()
-    # db.refresh(new_order)
     items=db.query(tables.CartItems).filter(tables.CartItems.user_id==user.id).all()
-    for item in items:
-        prd_id=item.product_id
-        #update quantity,sold
-        db.query(tables.product).filter(tables.product.id==prd_id).update({tables.product.quantity:tables.product.quantity-item.product_quantity})
-        db.query(tables.product).filter(tables.product.id==prd_id).update({tables.product.sold:tables.product.sold+item.product_quantity})
-        # delele from cart
-        db.delete(item)
+    if items:
+        new_order=tables.Order(user_id=user.id)
+        db.add(new_order)
         db.commit()
-    return user.cart
+        db.refresh(new_order)
+        for item in items:
+            new_order_detail=tables.OrderDetail(order_id=new_order.id,product_id=item.product_id,quantity=item.product_quantity,price=item.prd_inf.price)
+            db.add(new_order_detail)
+            db.commit()
+            db.refresh(new_order_detail)
+            prd_id=item.product_id
+            #update quantity,sold
+            db.query(tables.product).filter(tables.product.id==prd_id).update({tables.product.quantity:tables.product.quantity-item.product_quantity})
+            db.query(tables.product).filter(tables.product.id==prd_id).update({tables.product.sold:tables.product.sold+item.product_quantity})
+            # delele from cart
+            db.delete(item)
+            db.commit()
+    else:
+         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                        detail=f"Cart is empty")
+    return {"message":"Buy successfully",
+            "order detail":new_order.order_detail}
