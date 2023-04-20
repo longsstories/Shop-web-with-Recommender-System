@@ -58,7 +58,10 @@ def get_search(keyword,minprice,maxprice,sortby,order,cat,db:Session):
             else:
                 data_searched=data_searched.order_by(tables.product.price.desc())
         else:
-            data_searched=data_searched.order_by(tables.product.sold.desc())
+            if order=="acs":
+                data_searched=data_searched.order_by(tables.product.sold.asc())
+            else:
+                data_searched=data_searched.order_by(tables.product.sold.desc())
     else:
         data_searched=data_searched.order_by(func.random())
     return data_searched.all()
@@ -67,6 +70,6 @@ def recommender(productId,db:Session):
     imported_model = tf.saved_model.load(r'E:\Folders\longworkspace\Shop-web-with-Recommender-System\recommender\models')
     result_tensor =  imported_model.signatures['call_item_item'](tf.constant([productId]))
     result=result_tensor["output_0"]
-    ids = result[:12].numpy().tolist()
+    ids = result[:20].numpy().tolist()
     products=db.query(tables.product).filter(tables.product.id.in_(ids))
     return products.all()

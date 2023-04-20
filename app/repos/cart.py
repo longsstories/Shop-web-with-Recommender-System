@@ -5,21 +5,24 @@ from . import product
 
 
 def add_to_cart(request, db: Session,user):
-    check_item=db.query(tables.CartItems).filter(tables.CartItems.product_id==request.product_id).first()
+    cart_items=db.query(tables.CartItems).filter(tables.CartItems.user_id==user.id)
+    check_item=cart_items.filter(tables.CartItems.product_id==request.product_id).first()
     if check_item:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                        detail=f'Item already exists')
-    new_item=tables.CartItems(product_id=request.product_id,product_quantity=request.buy_count,user_id=user.id)
-    db.add(new_item)
-    db.commit()
-    db.refresh(new_item)
-    return new_item
+        db.query(tables.CartItems).filter(tables.CartItems.user_id==user.id).filter(tables.CartItems.product_id==request.product_id).update({tables.CartItems.product_quantity:tables.CartItems.product_quantity+request.buy_count})
+        db.commit()
+    else:
+        new_item=tables.CartItems(product_id=request.product_id,product_quantity=request.buy_count,user_id=user.id)
+        db.add(new_item)
+        db.commit()
+        db.refresh(new_item)
+    return user.cart
 
 def show_item(user):
     total = 0
     items=user.cart
     items_list=[]
     for item in items:
+        prd_id=item.product_id
         price=item.prd_inf.price
         product_name=item.prd_inf.name
         product_image=item.prd_inf.imgurl   
@@ -27,6 +30,7 @@ def show_item(user):
         product_price=price*product_quantity
         total += product_price
         item_dict={
+            "product_id":prd_id,
             "product_name" : product_name,
             "product_image" : product_image,
             "product_quantity" : product_quantity,

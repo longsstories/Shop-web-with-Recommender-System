@@ -8,7 +8,7 @@ router=APIRouter(
 )
 #tao user khach hang
 @router.post('/register')
-def register(request:schemas.Login,db:Session=Depends(database.get_db)):
+def register(request:OAuth2PasswordRequestForm = Depends(),db:Session=Depends(database.get_db)):
     new_email=request.username
     checkEmail=db.query(tables.User).filter(tables.User.email==new_email).first()
     if not checkEmail:
@@ -20,13 +20,7 @@ def register(request:schemas.Login,db:Session=Depends(database.get_db)):
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                             detail=f'User with email {new_email} already exists')
     access_token = token.create_access_token(data={"sub": new_user.email})
-    return { "message":"Register successfully",
-            "data":{
-                "access_token": access_token,
-                "token_type": "bearer",
-                "user":new_user
-            }
-            }
+    return {"access_token": access_token, "token_type":"bearer"}
 
 @router.post('/login')
 def login(request:OAuth2PasswordRequestForm = Depends() ,db:Session=Depends(database.get_db)):
