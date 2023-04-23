@@ -18,7 +18,7 @@ def add_to_cart(request:schemas.AddToCart,db: Session =Depends(get_db),user: sch
 def carts(user: schemas.User = Depends(oauth2.get_current_user)):
     return cart.show_item(user)
 
-@router.delete("/clear", status_code=status.HTTP_200_OK)
+@router.delete("/cart/clear", status_code=status.HTTP_200_OK)
 def delete_item(item_id,db: Session =Depends(get_db),user: schemas.User = Depends(oauth2.get_current_user)):
     return cart.clear_item(item_id,db,user)
 
@@ -27,5 +27,5 @@ def update_quantity(request:schemas.AddToCart,db: Session =Depends(get_db),user:
     return cart.update_quantity(request,db,user)
 
 @router.patch("/cart/buy", status_code=status.HTTP_200_OK)
-def buy_item(db: Session =Depends(get_db),user: schemas.User = Depends(oauth2.get_current_user)):
-    return cart.buy_item(db,user)
+def buy_item(ids:List[int],db: Session =Depends(get_db),user: schemas.User = Depends(oauth2.get_current_user)):
+    return cart.buy_item(ids,db,user)
