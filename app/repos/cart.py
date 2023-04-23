@@ -58,27 +58,24 @@ def update_quantity(request, db: Session,user):
     db.commit()
     return user.cart
 
-def buy_item(db: Session,user):
-    items=db.query(tables.CartItems).filter(tables.CartItems.user_id==user.id).all()
-    if items:
-        new_order=tables.Order(user_id=user.id)
-        db.add(new_order)
+def buy_item(ids,db: Session,user):
+    items=db.query(tables.CartItems).filter(tables.CartItems.user_id==user.id)
+    new_order=tables.Order(user_id=user.id)
+    db.add(new_order)
+    db.commit()
+    db.refresh(new_order)
+    for id in ids:
+        #add to order
+        item=items.filter(tables.CartItems.product_id==id).first()
+        order_detail=tables.OrderDetail(order_id=new_order.id,product_id=id,quantity=item.product_quantity,price=item.prd_inf.price)
+        db.add(order_detail)
         db.commit()
-        db.refresh(new_order)
-        for item in items:
-            new_order_detail=tables.OrderDetail(order_id=new_order.id,product_id=item.product_id,quantity=item.product_quantity,price=item.prd_inf.price)
-            db.add(new_order_detail)
-            db.commit()
-            db.refresh(new_order_detail)
-            prd_id=item.product_id
-            #update quantity,sold
-            db.query(tables.product).filter(tables.product.id==prd_id).update({tables.product.quantity:tables.product.quantity-item.product_quantity})
-            db.query(tables.product).filter(tables.product.id==prd_id).update({tables.product.sold:tables.product.sold+item.product_quantity})
-            # delele from cart
-            db.delete(item)
-            db.commit()
-    else:
-         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                        detail=f"Cart is empty")
+        db.refresh(order_detail)
+        #update quantity,sold in storage
+        db.query(tables.product).filter(tables.product.id==id).update({tables.product.quantity:tables.product.quantity-item.product_quantity})
+        db.query(tables.product).filter(tables.product.id==id).update({tables.product.sold:tables.product.sold+item.product_quantity})
+        #delete from cart
+        db.delete(item)
+        db.commit()
     return {"message":"Buy successfully",
             "order detail":new_order.order_detail}
