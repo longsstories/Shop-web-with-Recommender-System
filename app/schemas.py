@@ -23,7 +23,8 @@ class ShowUser(BaseModel):
     phone:str|None
     address:str|None
     gender:str|None
-    email:str
+    email:str|None
+    birthday:str|None
     class Config():
         orm_mode=True
 
@@ -58,3 +59,10 @@ class Carts(BaseModel):
     items: List[CartItems] = []
     class Config:
         orm_mode = True
+
+class AddProfile(BaseModel):
+    name:str
+    phone:str
+    address:str
+    gender:str
+    birthday:str
