@@ -18,16 +18,13 @@ class product(Base):
     cart = relationship("CartItems", back_populates="prd_inf")
 
 class User(Base):
-    __tablename__='users'
+    __tablename__='accounts'
     id = Column(Integer,primary_key=True,index=True)
-    name=Column(String)
-    phone=Column(String)
-    address=Column(String)
-    gender=Column(String)
     email=Column(String)
     password=Column(String)
     cart = relationship("CartItems", back_populates="user_inf")
     order = relationship("Order", back_populates="user")
+    profile = relationship("UserProfile", back_populates="user")
 
 class CartItems(Base):
     __tablename__ = 'cart_items'
@@ -35,14 +32,14 @@ class CartItems(Base):
     product_id = Column(Integer,ForeignKey("hanghoa.id"))
     product_quantity = Column(Integer)
     created_at = Column(TIMESTAMP(timezone=True),nullable=False, server_default=func.now())
-    user_id = Column(Integer,ForeignKey("users.id"))
+    user_id = Column(Integer,ForeignKey("accounts.id"))
     user_inf = relationship("User", back_populates="cart")
     prd_inf = relationship("product", back_populates="cart")
 
 class Order(Base):
     __tablename__ = 'orders'
     id = Column(Integer, nullable=False, primary_key=True, index=True)
-    user_id=Column(Integer,ForeignKey("users.id"))
+    user_id=Column(Integer,ForeignKey("accounts.id"))
     created_at = Column(TIMESTAMP(timezone=True),nullable=False, server_default=func.now())
     user = relationship("User",back_populates="order")
     order_detail = relationship("OrderDetail",back_populates="order")
@@ -55,3 +52,15 @@ class OrderDetail(Base):
     quantity=Column(Integer)
     price=Column(Integer)
     order= relationship("Order", back_populates="order_detail")
+
+class UserProfile(Base):
+    __tablename__ = 'user_profile'
+    id = Column(Integer, nullable=False, primary_key=True, index=True)
+    name=Column(String)
+    phone=Column(String)
+    address=Column(String)
+    gender=Column(String)
+    birthday=Column(String)
+    email=Column(String)
+    user_id=Column(Integer,ForeignKey("accounts.id"))
+    user = relationship("User",back_populates="profile")
