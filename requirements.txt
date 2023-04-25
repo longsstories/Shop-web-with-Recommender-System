@@ -7,3 +7,4 @@ python-jose
 tensorflow
 fastapi-pagination[all]
 python-multipart
+fastapi-users[sqlalchemy]

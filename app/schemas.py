@@ -66,3 +66,8 @@ class AddProfile(BaseModel):
     address:str
     gender:str
     birthday:str
+
+class ChangePassword(BaseModel):
+    current_pw:str
+    new_pw:str
+    confirm_pw:str
