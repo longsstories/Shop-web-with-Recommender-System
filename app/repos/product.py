@@ -65,7 +65,7 @@ def get_search(keyword,minprice,maxprice,sortby,order,cat,db:Session):
     return data_searched.all()
 
 def recommender(productId,db:Session):
-    imported_model = tf.saved_model.load(r'E:\Folders\longworkspace\Shop-web-with-Recommender-System\recommender\models')
+    imported_model = tf.saved_model.load(r'E:\Folders\longworkspace\Shop-web-with-Recommender-System\recommender\final_model')
     result_tensor =  imported_model.signatures['call_item_item'](tf.constant([productId]))
     result=result_tensor["output_0"]
     ids = result[:20].numpy().tolist()
