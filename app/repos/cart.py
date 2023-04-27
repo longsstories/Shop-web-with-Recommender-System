@@ -66,8 +66,14 @@ def buy_item(ids,db: Session,user):
     db.refresh(new_order)
     for id in ids:
         #add to order
+        quantity=item.product_quantity
+        price=item.prd_inf.price
         item=items.filter(tables.CartItems.product_id==id).first()
-        order_detail=tables.OrderDetail(order_id=new_order.id,product_id=id,quantity=item.product_quantity,price=item.prd_inf.price)
+        order_detail=tables.OrderDetail(order_id=new_order.id,
+                                        product_id=id,
+                                        quantity=quantity,
+                                        price=price
+                                        )
         db.add(order_detail)
         db.commit()
         db.refresh(order_detail)
