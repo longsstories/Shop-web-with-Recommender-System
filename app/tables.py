@@ -16,6 +16,7 @@ class product(Base):
     quantity=Column(Integer)
     old_price=Column(Integer)
     cart = relationship("CartItems", back_populates="prd_inf")
+    order=relationship("OrderDetail", back_populates="prd_inf")
 
 class User(Base):
     __tablename__='accounts'
@@ -48,10 +49,11 @@ class OrderDetail(Base):
     __tablename__ = 'oder_detail'
     id = Column(Integer, nullable=False, primary_key=True, index=True)
     order_id= Column(Integer,ForeignKey("orders.id"))
-    product_id=Column(Integer)
+    product_id=Column(Integer,ForeignKey("hanghoa.id"))
     quantity=Column(Integer)
     price=Column(Integer)
     order= relationship("Order", back_populates="order_detail")
+    prd_inf = relationship("product", back_populates="order")
 
 class UserProfile(Base):
     __tablename__ = 'user_profile'

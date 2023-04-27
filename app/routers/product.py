@@ -32,7 +32,7 @@ def categories():
                 {"id":2,
                  "name":"Đồ gia dụng"},
                 {"id":3,
-                 "name":"Áo quần"}
+                 "name":"Thời trang"}
             ]}
 #thong tin san pham theo id
 @router.get("/product",status_code=status.HTTP_200_OK,response_model=schemas.ShowProduct)

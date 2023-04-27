@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 from .. import tables
 from fastapi import HTTPException,status
-
+from typing import List
+import uuid
 
 #tao thong tin khach hang
 def create_info_user(request, db: Session,user):
@@ -30,3 +31,18 @@ def create_info_user(request, db: Session,user):
 
 def get_user(user):
     return user.profile
+
+def get_order(user):
+    return user.order
+    
+def get_order_detail(order_id,db: Session):
+    order_detail=db.query(tables.OrderDetail).filter(tables.OrderDetail.order_id==order_id).all()
+    return order_detail
+
+# IMAGEDIR="images/"
+# def upload_avt(file):
+#     file.filename=f"{uuid.uuid4()}.jpg"
+#     contents= file.read()
+#     with open("{IMAGEDIR}{file.filename}","wb") as f:
+#         f.write(contents)
+#     return {"filename":file.filename}
