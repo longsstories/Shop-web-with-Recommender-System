@@ -60,12 +60,6 @@ class Carts(BaseModel):
     class Config:
         orm_mode = True
 
-class OrderDetail(BaseModel):
-    product_id:int
-    quantity:int
-    price:int
-    class Config:
-            orm_mode = True
 class Orders(BaseModel):
     id: int
     created_at:datetime

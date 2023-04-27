@@ -57,3 +57,7 @@ def change_password(request:schemas.ChangePassword,db:Session=Depends(database.g
         db.query(tables.User).filter(tables.User.email==current_user.email).update({tables.User.password:Hash.bcrypt(request.new_pw)})
         db.commit()
     return {"message":"Change password successfully"}
+
+@router.get("/me")
+async def read_users_me(current_user: schemas.User = Depends(oauth2.get_current_user)):
+    return current_user

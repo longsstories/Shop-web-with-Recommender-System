@@ -33,11 +33,11 @@ def get_user(user):
     return user.profile
 
 def get_order(user):
-    return user.order
-    
-def get_order_detail(order_id,db: Session):
-    order_detail=db.query(tables.OrderDetail).filter(tables.OrderDetail.order_id==order_id).all()
-    return order_detail
+    orders=user.order
+    for order in orders:
+        for item in order.order_detail:
+            item.prd_inf.name
+    return orders    
 
 # IMAGEDIR="images/"
 # def upload_avt(file):
