@@ -25,7 +25,7 @@ Page = Page.with_custom_options(
 #     return paginate(product.get_cat(dm,db))
 @router.get("/categories",status_code=status.HTTP_200_OK)
 def categories():
-    return {"message":"get categories successfully",
+    return {"message":"Lấy danh mục thành công",
             "categories":[
                 {"id":1,
                 "name":"Đồ điện tử"},
