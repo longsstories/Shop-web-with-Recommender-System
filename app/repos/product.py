@@ -18,7 +18,7 @@ def get_product(id_prd,db:Session):
     product=db.query(tables.product).filter(tables.product.id==id_prd).first()
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f'Product with the id {id_prd} is not available')
+                            detail=f'Sản phẩm với id {id_prd} không tồn tại')
     return product
 
 #chuyen tieng viet co dau thanh khong dau

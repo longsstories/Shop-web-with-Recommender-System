@@ -50,7 +50,7 @@ def clear_item(item_id,db: Session,user):
         db.commit()
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                        detail=f"Item doesn't exist")
+                        detail=f"Sản phẩm không tồn tại")
     return user.cart
 
 def update_quantity(request, db: Session,user):
@@ -88,6 +88,6 @@ def buy_item(ids,db: Session,user):
             db.commit()
     else:
          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                        detail=f"Item doesn't exist")
-    return {"message":"Buy successfully",
+                        detail=f"Sản phẩm không tồn tại")
+    return {"message":"Mua thành công",
             "order detail":new_order.order_detail}
