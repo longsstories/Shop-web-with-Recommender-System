@@ -59,6 +59,8 @@ def update_quantity(request, db: Session,user):
     return user.cart
 
 def buy_item(ids,db: Session,user):
+    email=user.email
+    name=email.replace("@gmail.com","")
     items=db.query(tables.CartItems).filter(tables.CartItems.user_id==user.id)
     ids_inDB=[item.product_id for item in items.all()]
     check =  all(id in ids_inDB for id in ids)
@@ -77,6 +79,8 @@ def buy_item(ids,db: Session,user):
                                             quantity=quantity,
                                             price=price
                                             )
+            new_his=tables.History(userId=name,productId=id)
+            db.add(new_his)
             db.add(order_detail)
             db.commit()
             db.refresh(order_detail)

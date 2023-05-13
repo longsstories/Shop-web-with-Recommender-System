@@ -66,3 +66,9 @@ class UserProfile(Base):
     email=Column(String)
     user_id=Column(Integer,ForeignKey("accounts.id"))
     user = relationship("User",back_populates="profile")
+
+class History(Base):
+    __tablename__='history'
+    id = Column(Integer, nullable=False, primary_key=True, index=True)
+    userId=Column(Integer)
+    productId=Column(String)

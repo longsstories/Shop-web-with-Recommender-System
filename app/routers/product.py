@@ -49,7 +49,19 @@ def search(keyword:str=Query(None,min_length=2,max_length=20),
            order:str|None =Query("acs",enum=["acs","decs"]),
            cat:str=Query(None,enum=["1","2","3"]),
            db: Session =Depends(get_db)):
-    return paginate(product.get_search(keyword,minprice,maxprice,sortby,order,cat,db))
+    return paginate(product.get_search(keyword,minprice,maxprice,sortby,order,cat,db,current_user=None))
+
+@router.get("/products_user",response_model=Page[schemas.ShowProduct],status_code=status.HTTP_200_OK)
+def search(keyword:str=Query(None,min_length=2,max_length=20),
+           minprice:int|None =Query(None,gt=0),
+           maxprice:int|None =Query(None,gt=0),
+           sortby:str|None =Query(None,enum=["price","sales"]),
+           order:str|None =Query("acs",enum=["acs","decs"]),
+           cat:str=Query(None,enum=["1","2","3"]),
+           db: Session =Depends(get_db),
+           current_user: schemas.User|None = Depends(oauth2.get_current_user)):
+    return paginate(product.get_search(keyword,minprice,maxprice,sortby,order,cat,db,current_user))
+
    
 @router.get("/recommender",status_code=status.HTTP_200_OK)
 def recommend_items(item_id: int,db: Session =Depends(get_db)):

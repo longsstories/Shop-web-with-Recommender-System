@@ -4,6 +4,7 @@ from fastapi import HTTPException,status
 import tensorflow as tf
 from sqlalchemy.sql.expression import func
 
+
 def get_all(db:Session):
     products=db.query(tables.product).order_by(func.random()).all()
     return products
@@ -30,12 +31,22 @@ def normalize(keyword):
         keyword=keyword.replace(accented_words[letter],unaccented_words[letter])
     return keyword
 
-def get_search(keyword,minprice,maxprice,sortby,order,cat,db:Session):
+def get_search(keyword,minprice,maxprice,sortby,order,cat,db:Session,current_user):
+    data_searched=db.query(tables.product)
+    if current_user:
+        email=current_user.email
+        name=email.replace("@gmail.com","")
+        #check old user
+        pur_his=db.query(tables.History).filter(tables.History.userId==name).all()
+        if pur_his:
+            ids=[]
+            for row in pur_his:
+                ids.append(row.productId)
+            data_searched=product_user(name,ids,db)
     if cat:
         data_searched=db.query(tables.product).filter(tables.product.danhmuc==cat)
-    else:
-        data_searched=db.query(tables.product)
     if keyword:
+        data_searched=db.query(tables.product)
         keyword=normalize(keyword)
         search = "%{}%".format(keyword)
         data_searched=data_searched.filter(tables.product.name_unaccented.like(search))
@@ -65,9 +76,26 @@ def get_search(keyword,minprice,maxprice,sortby,order,cat,db:Session):
     return data_searched.all()
 
 def recommender(productId,db:Session):
-    imported_model = tf.saved_model.load(r'E:\Folders\longworkspace\Shop-web-with-Recommender-System\recommender\final_model')
+    imported_model = tf.saved_model.load(r'E:\Folders\longworkspace\Shop-web-with-Recommender-System\recommender\model1205')
     result_tensor =  imported_model.signatures['call_item_item'](tf.constant([productId]))
     result=result_tensor["output_0"]
     ids = result[:20].numpy().tolist()
     products=db.query(tables.product).filter(tables.product.id.in_(ids))
     return products.order_by(func.random()).all()
+
+#call product for old user
+def product_user(user,prd_purchased,db:Session):
+    imported_model = tf.saved_model.load(r'E:\Folders\longworkspace\Shop-web-with-Recommender-System\recommender\model1205')
+    user_result_tensor = imported_model.signatures['call_user_user'](tf.constant(user, dtype=tf.string))
+    users=user_result_tensor['output_0'].numpy()
+    str_users=[user.decode('utf-8') for user in users]
+    #get recommended products id
+    list_recommend=[]
+    for user in str_users[1:20]:
+        user_items=db.query(tables.History).filter(tables.History.userId==user).all()
+        for row in user_items:
+            list_recommend.append(row.productId)
+    list_recommend=[*set(list_recommend)]
+    ids=[id for id in list_recommend if id not in prd_purchased]
+    products=db.query(tables.product).filter(tables.product.id.in_(ids))
+    return products
