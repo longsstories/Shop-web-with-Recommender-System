@@ -72,3 +72,4 @@ class History(Base):
     id = Column(Integer, nullable=False, primary_key=True, index=True)
     userId=Column(Integer)
     productId=Column(String)
+    trained=Column(Integer)
