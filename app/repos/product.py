@@ -39,10 +39,10 @@ def get_search(keyword,minprice,maxprice,sortby,order,cat,db:Session,current_use
         #check old user
         pur_his=db.query(tables.History).filter(tables.History.userId==name).all()
         if pur_his:
-            ids=[]
-            for row in pur_his:
-                ids.append(row.productId)
-            data_searched=product_user(name,ids,db)
+            ids=[row.productId for row in pur_his]
+            trained=[row.trained for row in pur_his]
+            if 1 in trained:
+                data_searched=product_user(name,ids,db)
     if cat:
         data_searched=db.query(tables.product).filter(tables.product.danhmuc==cat)
     if keyword:
@@ -76,7 +76,7 @@ def get_search(keyword,minprice,maxprice,sortby,order,cat,db:Session,current_use
     return data_searched.all()
 
 def recommender(productId,db:Session):
-    imported_model = tf.saved_model.load(r'E:\Folders\longworkspace\Shop-web-with-Recommender-System\recommender\model1205')
+    imported_model = tf.saved_model.load(r'E:\Folders\longworkspace\Shop-web-with-Recommender-System\recommender\model1405')
     result_tensor =  imported_model.signatures['call_item_item'](tf.constant([productId]))
     result=result_tensor["output_0"]
     ids = result[:20].numpy().tolist()
@@ -85,13 +85,13 @@ def recommender(productId,db:Session):
 
 #call product for old user
 def product_user(user,prd_purchased,db:Session):
-    imported_model = tf.saved_model.load(r'E:\Folders\longworkspace\Shop-web-with-Recommender-System\recommender\model1205')
+    imported_model = tf.saved_model.load(r'E:\Folders\longworkspace\Shop-web-with-Recommender-System\recommender\model1405')
     user_result_tensor = imported_model.signatures['call_user_user'](tf.constant(user, dtype=tf.string))
     users=user_result_tensor['output_0'].numpy()
     str_users=[user.decode('utf-8') for user in users]
     #get recommended products id
     list_recommend=[]
-    for user in str_users[1:20]:
+    for user in str_users[1:30]:
         user_items=db.query(tables.History).filter(tables.History.userId==user).all()
         for row in user_items:
             list_recommend.append(row.productId)

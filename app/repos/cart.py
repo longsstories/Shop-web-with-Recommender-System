@@ -79,7 +79,7 @@ def buy_item(ids,db: Session,user):
                                             quantity=quantity,
                                             price=price
                                             )
-            new_his=tables.History(userId=name,productId=id)
+            new_his=tables.History(userId=name,productId=id,trained=0)
             db.add(new_his)
             db.add(order_detail)
             db.commit()
