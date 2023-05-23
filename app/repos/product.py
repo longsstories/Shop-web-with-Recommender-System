@@ -73,6 +73,8 @@ def get_search(keyword,minprice,maxprice,sortby,order,cat,db:Session,current_use
                 data_searched=data_searched.order_by(tables.product.sold.asc())
             else:
                 data_searched=data_searched.order_by(tables.product.sold.desc())
+    if not cat and not keyword and not minprice and not maxprice and not sortby:
+        data_searched=data_searched.order_by(func.random())
     return data_searched.all()
 
 def recommender(productId,db:Session):
