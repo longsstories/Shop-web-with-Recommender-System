@@ -15,8 +15,12 @@ class product(Base):
     sold=Column(Integer)
     quantity=Column(Integer)
     old_price=Column(Integer)
+    # supplier_id=Column(Integer,ForeignKey("supplier.id"))
+    # discount_id=Column(Integer,ForeignKey("discount.id"))
     cart = relationship("CartItems", back_populates="prd_inf")
     order=relationship("OrderDetail", back_populates="prd_inf")
+    # supplier=relationship("Supplier", back_populates="product")
+    # discount=relationship("Discount", back_populates="product")
 
 class User(Base):
     __tablename__='accounts'
@@ -26,6 +30,7 @@ class User(Base):
     cart = relationship("CartItems", back_populates="user_inf")
     order = relationship("Order", back_populates="user")
     profile = relationship("UserProfile", back_populates="user")
+    #rank= relationship("UserRank", back_populates="user")
 
 class CartItems(Base):
     __tablename__ = 'cart_items'
@@ -73,3 +78,24 @@ class History(Base):
     userId=Column(Integer)
     productId=Column(String)
     trained=Column(Integer)
+
+class Supplier(Base):
+    __tablename__='supplier'
+    id = Column(Integer, nullable=False, primary_key=True, index=True)
+    name=Column(String)
+    #product=relationship("product", back_populates="supplier")
+
+class Discount(Base):
+    __tablename__='discount'
+    id = Column(Integer, nullable=False, primary_key=True, index=True)
+    name=Column(String)
+    discount_percent=Column(Integer)
+    active=Column(Integer)
+    #product=relationship("product", back_populates="discount")
+
+class UserRank(Base):
+    __tablename__='rank_user'
+    id = Column(Integer, nullable=False, primary_key=True, index=True)
+    name=Column(String)
+    user_id=Column(Integer,ForeignKey("accounts.id"))
+    #user=relationship("User",back_populates="rank")
